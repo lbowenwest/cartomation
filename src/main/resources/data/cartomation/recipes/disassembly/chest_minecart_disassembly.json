@@ -1,0 +1,12 @@
+{
+  "type": "cartomation:disassembly",
+  "ingredient": {
+    "item": "minecraft:chest_minecart"
+  },
+  "result": {
+    "item": "minecraft:chest"
+  },
+  "remaining": {
+    "item": "minecraft:minecart"
+  }
+}

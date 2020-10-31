@@ -1,0 +1,12 @@
+{
+  "type": "cartomation:disassembly",
+  "ingredient": {
+    "item": "minecraft:furnace_minecart"
+  },
+  "result": {
+    "item": "minecraft:furnace"
+  },
+  "remaining": {
+    "item": "minecraft:minecart"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "cartomation:disassembly",
+  "ingredient": {
+    "item": "minecraft:hopper_minecart"
+  },
+  "result": {
+    "item": "minecraft:hopper"
+  },
+  "remaining": {
+    "item": "minecraft:minecart"
+  }
+}

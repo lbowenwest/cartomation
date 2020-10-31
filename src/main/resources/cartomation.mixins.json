@@ -1,0 +1,17 @@
+{
+  "minVersion": "0.8",
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "cartomation.refmap.json",
+  "package": "tweakyllama.cartomation.mixin",
+  "mixins": [
+    "AbstractMinecartEntityMixin",
+    "MinecartEntityMixin",
+    "ChestMinecartEntityMixin",
+    "HopperMinecartEntityMixin",
+    "FurnaceMinecartEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
