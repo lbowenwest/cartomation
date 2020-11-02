@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/rail_flat",
   "textures": {
-    "rail": "cartomation:block/rail/holding_rail"
+    "rail": "cartomation:block/rail/holding_rail_reverse"
   }
 }

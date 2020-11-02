@@ -12,7 +12,6 @@ public interface InteractiveRailBlock {
 
     /**
      *
-     * @param state
      * @param worldIn
      * @param pos
      * @param player
@@ -20,5 +19,5 @@ public interface InteractiveRailBlock {
      * @param hit
      * @return
      */
-    ActionResultType onWrenchInteraction(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit);
+    ActionResultType onWrenchInteraction(World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit);
 }

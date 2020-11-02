@@ -1,19 +1,18 @@
 {
   "variants": {
     "axis_direction=true,powered=true,shape=north_south": {
-      "model": "cartomation:block/holding_rail_powered"
+      "model": "cartomation:block/holding_rail_on"
     },
     "axis_direction=true,powered=true,shape=east_west": {
-      "model": "cartomation:block/holding_rail_powered",
+      "model": "cartomation:block/holding_rail_on",
       "y": 90
     },
     "axis_direction=false,powered=true,shape=north_south": {
-      "model": "cartomation:block/holding_rail_powered",
-      "y": 180
+      "model": "cartomation:block/holding_rail_powered_reverse"
     },
     "axis_direction=false,powered=true,shape=east_west": {
-      "model": "cartomation:block/holding_rail_powered",
-      "y": 270
+      "model": "cartomation:block/holding_rail_powered_reverse",
+      "y": 90
     },
     "axis_direction=true,powered=false,shape=north_south": {
       "model": "cartomation:block/holding_rail"
@@ -23,12 +22,10 @@
       "y": 90
     },
     "axis_direction=false,powered=false,shape=north_south": {
-      "model": "cartomation:block/holding_rail",
-      "y": 180
+      "model": "cartomation:block/holding_rail_reverse"
     },
     "axis_direction=false,powered=false,shape=east_west": {
-      "model": "cartomation:block/holding_rail",
-      "y": 270
+      "model": "cartomation:block/holding_rail_reverse"
     }
   }
 }

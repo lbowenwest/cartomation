@@ -1,9 +1,6 @@
 package tweakyllama.cartomation.rail.block;
 
-import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,10 +17,10 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import tweakyllama.cartomation.base.handler.RegistryHandler;
-import tweakyllama.cartomation.cart.entity.HoldableMinecartEntity;
 import tweakyllama.cartomation.tool.item.CrowbarItem;
 
 public class HoldingRailBlock extends AbstractRailBlock {
@@ -83,13 +80,17 @@ public class HoldingRailBlock extends AbstractRailBlock {
      */
     @Override
     public void onMinecartPass(BlockState state, World world, BlockPos pos, AbstractMinecartEntity cart) {
-        if (cart instanceof HoldableMinecartEntity) {
-            ((HoldableMinecartEntity) cart).onHoldingRailPass(pos.getX(), pos.getY(), pos.getZ(), state.get(POWERED), getImpulseDirection(state));
+        if (!state.get(POWERED)) {
+            cart.setMotion(Vector3d.ZERO);
         }
+//        if (cart instanceof HoldableMinecartEntity) {
+//            ((HoldableMinecartEntity) cart).onHoldingRailPass(pos.getX(), pos.getY(), pos.getZ(), state.get(POWERED), getImpulseDirection(state));
+//        }
     }
 
     /**
      * Returns the direction a holding cart is facing from the block state
+     *
      * @param state block state
      * @return facing direction
      */
@@ -100,16 +101,16 @@ public class HoldingRailBlock extends AbstractRailBlock {
                 : Direction.getFacingFromAxisDirection(Direction.Axis.X, axisDirection.inverted());
     }
 
-
     /**
      * Called when the block is activated
+     * We flip the direction when the rail is activated with a crowbar
      *
-     * @param state
-     * @param worldIn
-     * @param pos
-     * @param player
-     * @param handIn
-     * @param hit
+     * @param state block state
+     * @param worldIn world
+     * @param pos block position
+     * @param player player that used the item
+     * @param handIn which hand the item is held
+     * @param hit where on the block the item was used
      * @return
      */
     @Override

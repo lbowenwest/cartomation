@@ -9,7 +9,8 @@
     "MinecartEntityMixin",
     "ChestMinecartEntityMixin",
     "HopperMinecartEntityMixin",
-    "FurnaceMinecartEntityMixin"
+    "FurnaceMinecartEntityMixin",
+    "AbstractMinecartEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

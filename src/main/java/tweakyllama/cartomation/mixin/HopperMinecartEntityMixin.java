@@ -1,11 +1,9 @@
 package tweakyllama.cartomation.mixin;
 
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.minecart.ChestMinecartEntity;
 import net.minecraft.entity.item.minecart.ContainerMinecartEntity;
 import net.minecraft.entity.item.minecart.HopperMinecartEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ChestContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.HopperContainer;
 import net.minecraft.item.Items;
