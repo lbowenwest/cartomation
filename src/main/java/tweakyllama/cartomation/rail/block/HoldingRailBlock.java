@@ -82,6 +82,10 @@ public class HoldingRailBlock extends AbstractRailBlock {
     public void onMinecartPass(BlockState state, World world, BlockPos pos, AbstractMinecartEntity cart) {
         if (!state.get(POWERED)) {
             cart.setMotion(Vector3d.ZERO);
+        } else {
+            float speedIncrease = .5f;
+            Vector3d motion = cart.getMotion();
+            cart.setMotion(motion.add(getImpulseVector(state, speedIncrease)));
         }
 //        if (cart instanceof HoldableMinecartEntity) {
 //            ((HoldableMinecartEntity) cart).onHoldingRailPass(pos.getX(), pos.getY(), pos.getZ(), state.get(POWERED), getImpulseDirection(state));
@@ -102,16 +106,32 @@ public class HoldingRailBlock extends AbstractRailBlock {
     }
 
     /**
+     * Gets the impulse vector to add to a minecart from the block state
+     *
+     * @param state block state
+     * @param speedIncrease magnitude of speed increase along axis
+     * @return vector of impulse
+     */
+    public Vector3d getImpulseVector(BlockState state, float speedIncrease) {
+        Direction direction = getImpulseDirection(state);
+        return new Vector3d(
+                direction.getXOffset() * speedIncrease,
+                direction.getYOffset() * speedIncrease,
+                direction.getZOffset() * speedIncrease
+        );
+    }
+
+    /**
      * Called when the block is activated
      * We flip the direction when the rail is activated with a crowbar
      *
-     * @param state block state
+     * @param state   block state
      * @param worldIn world
-     * @param pos block position
-     * @param player player that used the item
-     * @param handIn which hand the item is held
-     * @param hit where on the block the item was used
-     * @return
+     * @param pos     block position
+     * @param player  player that used the item
+     * @param handIn  which hand the item is held
+     * @param hit     where on the block the item was used
+     * @return ActionResultType
      */
     @Override
     @SuppressWarnings("deprecation")
