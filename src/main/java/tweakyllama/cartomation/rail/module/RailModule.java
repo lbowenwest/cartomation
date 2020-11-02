@@ -8,9 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import tweakyllama.cartomation.base.module.Module;
 import tweakyllama.cartomation.rail.block.HoldingRailBlock;
-import tweakyllama.cartomation.rail.item.DetectorRailKitItem;
-import tweakyllama.cartomation.rail.item.HoldingRailKitItem;
-import tweakyllama.cartomation.rail.item.PoweredRailKitItem;
+import tweakyllama.cartomation.rail.item.RailKit;
 
 public class RailModule extends Module {
 
@@ -19,14 +17,16 @@ public class RailModule extends Module {
     public static Item holdingRailKit;
     public static Item poweredRailKit;
     public static Item detectorRailKit;
+    public static Item activatorRailKit;
 
     @Override
     public void construct() {
         holdingRail = new HoldingRailBlock();
 
-        holdingRailKit = new HoldingRailKitItem();
-        poweredRailKit = new PoweredRailKitItem();
-        detectorRailKit = new DetectorRailKitItem();
+        holdingRailKit = new RailKit.HoldingRailKitItem();
+        poweredRailKit = new RailKit.PoweredRailKitItem();
+        detectorRailKit = new RailKit.DetectorRailKitItem();
+        activatorRailKit = new RailKit.ActivatorRailKitItem();
     }
 
     public static ItemStack getKitFromRail(AbstractRailBlock railBlock) {
@@ -37,7 +37,12 @@ public class RailModule extends Module {
         if (railBlock instanceof HoldingRailBlock) {
             return new ItemStack(holdingRailKit);
         } else if (railBlock instanceof PoweredRailBlock) {
-            return new ItemStack(poweredRailKit);
+             // special case of activator and powered rail
+            if (((PoweredRailBlock) railBlock).isActivatorRail()) {
+                return new ItemStack(activatorRailKit);
+            } else {
+                return new ItemStack(poweredRailKit);
+            }
         } else if (railBlock instanceof DetectorRailBlock) {
             return new ItemStack(detectorRailKit);
         }
