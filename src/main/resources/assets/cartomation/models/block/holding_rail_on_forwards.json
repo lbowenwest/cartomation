@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/rail_flat",
+  "textures": {
+    "rail": "cartomation:block/rail/holding_rail_on_forwards"
+  }
+}

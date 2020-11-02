@@ -97,7 +97,7 @@ public class HoldingRailBlock extends AbstractRailBlock {
     }
 
     /**
-     * Returns the direction a holding cart is facing from the block state
+     * Returns the direction a holding cart should move from the block
      *
      * If rail direction is NONE defaults to positive, so check that before running this
      *
@@ -105,9 +105,10 @@ public class HoldingRailBlock extends AbstractRailBlock {
      * @return facing direction
      */
     public Direction getImpulseDirection(BlockState state) {
+        Direction.AxisDirection axisDirection = state.get(DIRECTION).asDirection().inverted();
         return state.get(SHAPE) == RailShape.NORTH_SOUTH
-                ? Direction.getFacingFromAxisDirection(Direction.Axis.Z, state.get(DIRECTION).asDirection())
-                : Direction.getFacingFromAxisDirection(Direction.Axis.X, state.get(DIRECTION).asDirection());
+                ? Direction.getFacingFromAxisDirection(Direction.Axis.Z, axisDirection)
+                : Direction.getFacingFromAxisDirection(Direction.Axis.X, axisDirection);
 
     }
 
