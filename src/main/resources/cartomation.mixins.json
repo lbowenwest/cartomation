@@ -6,7 +6,6 @@
   "package": "tweakyllama.cartomation.mixin",
   "mixins": [
     "AbstractMinecartEntityMixin",
-    "MinecartEntityMixin",
     "ChestMinecartEntityMixin",
     "HopperMinecartEntityMixin",
     "FurnaceMinecartEntityMixin",
