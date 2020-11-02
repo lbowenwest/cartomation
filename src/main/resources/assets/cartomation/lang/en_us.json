@@ -1,4 +1,9 @@
 {
   "item.cartomation.crowbar": "Crowbar",
-  "message.crowbar": "A simple crowbar, use to pick up rails quickly"
+  "message.crowbar": "A simple crowbar, use to pick up rails quickly",
+  "item.cartomation.activator_rail_kit": "Activator Rail Kit",
+  "item.cartomation.detector_rail_kit": "Detector Rail Kit",
+  "item.cartomation.holding_rail_kit": "Holding Rail Kit",
+  "item.cartomation.powered_rail_kit": "Powered Rail Kit",
+  "block.cartomation.holding_rail": "Holding Rail"
 }
