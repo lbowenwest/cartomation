@@ -2,8 +2,11 @@ package tweakyllama.cartomation.rail.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
@@ -14,20 +17,29 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.RailShape;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import tweakyllama.cartomation.base.handler.RegistryHandler;
 import tweakyllama.cartomation.rail.state.RailDirection;
 import tweakyllama.cartomation.tool.item.CrowbarItem;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Predicate;
 
 public class HoldingRailBlock extends AbstractRailBlock {
     public static final EnumProperty<RailShape> SHAPE = RailBlockStateProperties.RAIL_SHAPE_STRAIGHT_FLAT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final EnumProperty<RailDirection> DIRECTION = RailBlockStateProperties.RAIL_DIRECTION;
+    public static final BooleanProperty OCCUPIED = RailBlockStateProperties.OCCUPIED;
 //    public static final BooleanProperty AXIS_DIRECTION = RailBlockStateProperties.AXIS_DIRECTION;
 
     public HoldingRailBlock() {
@@ -45,12 +57,13 @@ public class HoldingRailBlock extends AbstractRailBlock {
                 .with(POWERED, false)
                 .with(SHAPE, RailShape.NORTH_SOUTH)
                 .with(DIRECTION, RailDirection.NONE)
+                .with(OCCUPIED, false)
         );
         RegistryHandler.registerBlock(this, "holding_rail");
     }
 
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE, POWERED, DIRECTION);
+        builder.add(SHAPE, POWERED, DIRECTION, OCCUPIED);
     }
 
     /**
@@ -94,11 +107,12 @@ public class HoldingRailBlock extends AbstractRailBlock {
 //        if (cart instanceof HoldableMinecartEntity) {
 //            ((HoldableMinecartEntity) cart).onHoldingRailPass(pos.getX(), pos.getY(), pos.getZ(), state.get(POWERED), getImpulseDirection(state));
 //        }
+        world.updateComparatorOutputLevel(pos, this);
     }
 
     /**
      * Returns the direction a holding cart should move from the block
-     *
+     * <p>
      * If rail direction is NONE defaults to positive, so check that before running this
      *
      * @param state block state
@@ -115,7 +129,7 @@ public class HoldingRailBlock extends AbstractRailBlock {
     /**
      * Gets the impulse vector to add to a minecart from the block state
      *
-     * @param state block state
+     * @param state         block state
      * @param speedIncrease magnitude of speed increase along axis
      * @return vector of impulse
      */
@@ -169,5 +183,75 @@ public class HoldingRailBlock extends AbstractRailBlock {
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         // TODO
         return super.getStateForPlacement(context);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean hasComparatorInputOverride(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+        List<AbstractMinecartEntity> carts = this.findMinecarts(worldIn, pos, AbstractMinecartEntity.class, EntityPredicates.HAS_INVENTORY);
+//        if (!carts.isEmpty() && carts.get(0).getComparatorLevel() > -1) return carts.get(0).getComparatorLevel();
+        if (!carts.isEmpty()) {
+            return Container.calcRedstoneFromInventory((IInventory)carts.get(0));
+        }
+        return 0;
+    }
+
+    protected <T extends AbstractMinecartEntity> List<T> findMinecarts(World worldIn, BlockPos pos, Class<T> cartType, @Nullable Predicate<Entity> filter) {
+        return worldIn.getEntitiesWithinAABB(cartType, this.getDectectionBox(pos), filter);
+    }
+
+    private AxisAlignedBB getDectectionBox(BlockPos pos) {
+        return new AxisAlignedBB(
+                (double) pos.getX() + 0.2D, (double) pos.getY(), (double) pos.getZ() + 0.2D,
+                (double) (pos.getX() + 1) - 0.2D, (double) (pos.getY() + 1) - 0.2D, (double) (pos.getZ() + 1) - 0.2D
+        );
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entityIn) {
+        if (!worldIn.isRemote) {
+            if (!state.get(OCCUPIED)) {
+                updateOccupiedState(worldIn, pos, state);
+            }
+        }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void tick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+        if (state.get(OCCUPIED)) {
+            this.updateOccupiedState(worldIn, pos, state);
+        }
+    }
+
+    public void updateOccupiedState(World world, BlockPos pos, BlockState state) {
+        if (!this.isValidPosition(state, world, pos))
+            return;
+
+        boolean previouslyOccupied = state.get(OCCUPIED);
+        boolean currentlyOccupied = false;
+        List<AbstractMinecartEntity> carts = this.findMinecarts(world, pos, AbstractMinecartEntity.class, null);
+        if (!carts.isEmpty()) {
+            currentlyOccupied = true;
+        }
+
+        if (previouslyOccupied != currentlyOccupied) {
+            world.setBlockState(pos, state.with(OCCUPIED, currentlyOccupied), 3);
+            world.notifyNeighborsOfStateChange(pos, this);
+        }
+
+        if (currentlyOccupied) {
+            world.getPendingBlockTicks().scheduleTick(pos, this, 20);
+        }
+
+        world.updateComparatorOutputLevel(pos, this);
+
     }
 }
