@@ -1,31 +1,46 @@
 {
   "variants": {
-    "axis_direction=true,powered=true,shape=north_south": {
+    "rail_direction=none,powered=true,shape=north_south": {
       "model": "cartomation:block/holding_rail_on"
     },
-    "axis_direction=true,powered=true,shape=east_west": {
+    "rail_direction=none,powered=true,shape=east_west": {
       "model": "cartomation:block/holding_rail_on",
       "y": 90
     },
-    "axis_direction=false,powered=true,shape=north_south": {
-      "model": "cartomation:block/holding_rail_powered_reverse"
+    "rail_direction=forwards,powered=true,shape=north_south": {
+      "model": "cartomation:block/holding_rail_on_forwards"
     },
-    "axis_direction=false,powered=true,shape=east_west": {
-      "model": "cartomation:block/holding_rail_powered_reverse",
+    "rail_direction=forwards,powered=true,shape=east_west": {
+      "model": "cartomation:block/holding_rail_on_forwards",
       "y": 90
     },
-    "axis_direction=true,powered=false,shape=north_south": {
+    "rail_direction=backwards,powered=true,shape=north_south": {
+      "model": "cartomation:block/holding_rail_on_backwards"
+    },
+    "rail_direction=backwards,powered=true,shape=east_west": {
+      "model": "cartomation:block/holding_rail_on_backwards",
+      "y": 90
+    },
+    "rail_direction=none,powered=false,shape=north_south": {
       "model": "cartomation:block/holding_rail"
     },
-    "axis_direction=true,powered=false,shape=east_west": {
+    "rail_direction=none,powered=false,shape=east_west": {
       "model": "cartomation:block/holding_rail",
       "y": 90
     },
-    "axis_direction=false,powered=false,shape=north_south": {
-      "model": "cartomation:block/holding_rail_reverse"
+    "rail_direction=forwards,powered=false,shape=north_south": {
+      "model": "cartomation:block/holding_rail_forwards"
     },
-    "axis_direction=false,powered=false,shape=east_west": {
-      "model": "cartomation:block/holding_rail_reverse"
+    "rail_direction=forwards,powered=false,shape=east_west": {
+      "model": "cartomation:block/holding_rail_forwards",
+      "y": 90
+    },
+    "rail_direction=backwards,powered=false,shape=north_south": {
+      "model": "cartomation:block/holding_rail_backwards"
+    },
+    "rail_direction=backwards,powered=false,shape=east_west": {
+      "model": "cartomation:block/holding_rail_backwards",
+      "y": 90
     }
   }
 }

@@ -21,12 +21,14 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import tweakyllama.cartomation.base.handler.RegistryHandler;
+import tweakyllama.cartomation.rail.state.RailDirection;
 import tweakyllama.cartomation.tool.item.CrowbarItem;
 
 public class HoldingRailBlock extends AbstractRailBlock {
     public static final EnumProperty<RailShape> SHAPE = RailBlockStateProperties.RAIL_SHAPE_STRAIGHT_FLAT;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
-    public static final BooleanProperty AXIS_DIRECTION = RailBlockStateProperties.AXIS_DIRECTION;
+    public static final EnumProperty<RailDirection> DIRECTION = RailBlockStateProperties.RAIL_DIRECTION;
+//    public static final BooleanProperty AXIS_DIRECTION = RailBlockStateProperties.AXIS_DIRECTION;
 
     public HoldingRailBlock() {
         // default rail properties
@@ -42,13 +44,13 @@ public class HoldingRailBlock extends AbstractRailBlock {
         this.setDefaultState(this.stateContainer.getBaseState()
                 .with(POWERED, false)
                 .with(SHAPE, RailShape.NORTH_SOUTH)
-                .with(AXIS_DIRECTION, true)
+                .with(DIRECTION, RailDirection.NONE)
         );
         RegistryHandler.registerBlock(this, "holding_rail");
     }
 
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE, POWERED, AXIS_DIRECTION);
+        builder.add(SHAPE, POWERED, DIRECTION);
     }
 
     /**
@@ -83,9 +85,11 @@ public class HoldingRailBlock extends AbstractRailBlock {
         if (!state.get(POWERED)) {
             cart.setMotion(Vector3d.ZERO);
         } else {
-            float speedIncrease = .5f;
-            Vector3d motion = cart.getMotion();
-            cart.setMotion(motion.add(getImpulseVector(state, speedIncrease)));
+            if (state.get(DIRECTION) != RailDirection.NONE) {
+                float speedIncrease = .5f;
+                Vector3d motion = cart.getMotion();
+                cart.setMotion(motion.add(getImpulseVector(state, speedIncrease)));
+            }
         }
 //        if (cart instanceof HoldableMinecartEntity) {
 //            ((HoldableMinecartEntity) cart).onHoldingRailPass(pos.getX(), pos.getY(), pos.getZ(), state.get(POWERED), getImpulseDirection(state));
@@ -95,14 +99,16 @@ public class HoldingRailBlock extends AbstractRailBlock {
     /**
      * Returns the direction a holding cart is facing from the block state
      *
+     * If rail direction is NONE defaults to positive, so check that before running this
+     *
      * @param state block state
      * @return facing direction
      */
     public Direction getImpulseDirection(BlockState state) {
-        Direction.AxisDirection axisDirection = state.get(AXIS_DIRECTION) ? Direction.AxisDirection.POSITIVE : Direction.AxisDirection.NEGATIVE;
         return state.get(SHAPE) == RailShape.NORTH_SOUTH
-                ? Direction.getFacingFromAxisDirection(Direction.Axis.Z, axisDirection.inverted())
-                : Direction.getFacingFromAxisDirection(Direction.Axis.X, axisDirection.inverted());
+                ? Direction.getFacingFromAxisDirection(Direction.Axis.Z, state.get(DIRECTION).asDirection())
+                : Direction.getFacingFromAxisDirection(Direction.Axis.X, state.get(DIRECTION).asDirection());
+
     }
 
     /**
@@ -142,7 +148,7 @@ public class HoldingRailBlock extends AbstractRailBlock {
         }
         ItemStack heldItem = player.getHeldItem(handIn);
         if (heldItem.getItem() instanceof CrowbarItem) {
-            worldIn.setBlockState(pos, state.with(AXIS_DIRECTION, !state.get(AXIS_DIRECTION)));
+            worldIn.setBlockState(pos, state.with(DIRECTION, state.get(DIRECTION).nextState()));
             return ActionResultType.CONSUME;
         }
         return ActionResultType.PASS;
