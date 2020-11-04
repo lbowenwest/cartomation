@@ -4,8 +4,11 @@ import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.DetectorRailBlock;
 import net.minecraft.block.PoweredRailBlock;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import tweakyllama.cartomation.base.module.Module;
 import tweakyllama.cartomation.rail.block.HoldingRailBlock;
 import tweakyllama.cartomation.rail.item.RailKit;
@@ -27,6 +30,11 @@ public class RailModule extends Module {
         poweredRailKit = new RailKit.PoweredRailKitItem();
         detectorRailKit = new RailKit.DetectorRailKitItem();
         activatorRailKit = new RailKit.ActivatorRailKitItem();
+    }
+
+    @Override
+    public void clientSetup(FMLClientSetupEvent event) {
+        RenderTypeLookup.setRenderLayer(holdingRail, RenderType.getCutout());
     }
 
     public static ItemStack getKitFromRail(AbstractRailBlock railBlock) {

@@ -1,6 +1,9 @@
 package tweakyllama.cartomation.rail.block;
 
-import net.minecraft.block.*;
+import net.minecraft.block.AbstractRailBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -15,10 +18,7 @@ import net.minecraft.state.Property;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.state.properties.RailShape;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -197,19 +197,20 @@ public class HoldingRailBlock extends AbstractRailBlock {
         List<AbstractMinecartEntity> carts = this.findMinecarts(worldIn, pos, AbstractMinecartEntity.class, EntityPredicates.HAS_INVENTORY);
 //        if (!carts.isEmpty() && carts.get(0).getComparatorLevel() > -1) return carts.get(0).getComparatorLevel();
         if (!carts.isEmpty()) {
-            return Container.calcRedstoneFromInventory((IInventory)carts.get(0));
+            return Container.calcRedstoneFromInventory((IInventory) carts.get(0));
         }
         return 0;
     }
 
     protected <T extends AbstractMinecartEntity> List<T> findMinecarts(World worldIn, BlockPos pos, Class<T> cartType, @Nullable Predicate<Entity> filter) {
-        return worldIn.getEntitiesWithinAABB(cartType, this.getDectectionBox(pos), filter);
+        return worldIn.getEntitiesWithinAABB(cartType, this.getDetectionBox(pos), filter);
     }
 
-    private AxisAlignedBB getDectectionBox(BlockPos pos) {
+    private AxisAlignedBB getDetectionBox(BlockPos pos) {
+        double delta = 0.2D;
         return new AxisAlignedBB(
-                (double) pos.getX() + 0.2D, (double) pos.getY(), (double) pos.getZ() + 0.2D,
-                (double) (pos.getX() + 1) - 0.2D, (double) (pos.getY() + 1) - 0.2D, (double) (pos.getZ() + 1) - 0.2D
+                (double) pos.getX() + delta, pos.getY(), (double) pos.getZ() + delta,
+                (double) (pos.getX() + 1) - delta, (double) (pos.getY() + 1) - delta, (double) (pos.getZ() + 1) - delta
         );
     }
 
@@ -248,10 +249,71 @@ public class HoldingRailBlock extends AbstractRailBlock {
         }
 
         if (currentlyOccupied) {
+            // schedule a tick to check if we need to unset OCCUPIED
             world.getPendingBlockTicks().scheduleTick(pos, this, 20);
         }
 
         world.updateComparatorOutputLevel(pos, this);
 
+    }
+
+    /**
+     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable returns the
+     * passed blockstate
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState rotate(BlockState state, Rotation rot) {
+        switch (rot) {
+            case CLOCKWISE_180:
+                switch (state.get(DIRECTION)) {
+                    case NONE:
+                        return state;
+                    case FORWARDS:
+                        return state.with(DIRECTION, RailDirection.BACKWARDS);
+                    case BACKWARDS:
+                        return state.with(DIRECTION, RailDirection.FORWARDS);
+                }
+            case CLOCKWISE_90:
+                switch (state.get(SHAPE)) {
+                    case NORTH_SOUTH:
+                        return state.with(SHAPE, RailShape.EAST_WEST);
+                    case EAST_WEST:
+                        return state.with(SHAPE, RailShape.NORTH_SOUTH);
+                }
+            case COUNTERCLOCKWISE_90:
+                switch (state.get(SHAPE)) {
+                    case NORTH_SOUTH:
+                        return state.with(SHAPE, RailShape.EAST_WEST);
+                    case EAST_WEST:
+                        return state.with(SHAPE, RailShape.NORTH_SOUTH);
+                }
+            default:
+                return state;
+        }
+    }
+
+    /**
+     * Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed
+     * blockstate.
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        // TODO this aint right
+        switch (mirrorIn) {
+            case LEFT_RIGHT:
+            case FRONT_BACK:
+                switch (state.get(DIRECTION)) {
+                    case NONE:
+                        return state;
+                    case FORWARDS:
+                        return state.with(DIRECTION, RailDirection.BACKWARDS);
+                    case BACKWARDS:
+                        return state.with(DIRECTION, RailDirection.FORWARDS);
+                }
+            default:
+                return state;
+        }
     }
 }
