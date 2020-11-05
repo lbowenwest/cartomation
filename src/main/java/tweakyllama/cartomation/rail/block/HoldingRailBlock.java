@@ -27,6 +27,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import tweakyllama.cartomation.base.handler.RegistryHandler;
+import tweakyllama.cartomation.rail.module.RailModule;
 import tweakyllama.cartomation.rail.state.RailDirection;
 import tweakyllama.cartomation.tool.item.CrowbarItem;
 
@@ -99,7 +100,7 @@ public class HoldingRailBlock extends AbstractRailBlock {
             cart.setMotion(Vector3d.ZERO);
         } else {
             if (state.get(DIRECTION) != RailDirection.NONE) {
-                float speedIncrease = .5f;
+                float speedIncrease = RailModule.boostSpeed;
                 Vector3d motion = cart.getMotion();
                 cart.setMotion(motion.add(getImpulseVector(state, speedIncrease)));
             }

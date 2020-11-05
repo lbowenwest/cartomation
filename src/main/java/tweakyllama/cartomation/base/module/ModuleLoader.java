@@ -7,10 +7,12 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import tweakyllama.cartomation.base.config.ConfigBuilder;
 import tweakyllama.cartomation.cart.module.CartModule;
 import tweakyllama.cartomation.rail.module.RailModule;
 import tweakyllama.cartomation.tool.module.CrowbarModule;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -22,6 +24,13 @@ public final class ModuleLoader {
     public void start() {
         findModules();
         dispatch(Module::construct);
+        buildConfig();
+    }
+
+    private void buildConfig() {
+        ConfigBuilder builder = new ConfigBuilder(new ArrayList<>(foundModules.values()));
+        builder.makeSpec();
+        builder.refreshConfig();
     }
 
     @OnlyIn(Dist.CLIENT)

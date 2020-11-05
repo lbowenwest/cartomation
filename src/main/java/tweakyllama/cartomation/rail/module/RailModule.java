@@ -9,11 +9,15 @@ import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import tweakyllama.cartomation.base.config.Config;
 import tweakyllama.cartomation.base.module.Module;
 import tweakyllama.cartomation.rail.block.HoldingRailBlock;
 import tweakyllama.cartomation.rail.item.RailKit;
 
 public class RailModule extends Module {
+
+    @Config(description = "Holding rail boost speed")
+    public static float boostSpeed = .5f;
 
     public static Block holdingRail;
 
